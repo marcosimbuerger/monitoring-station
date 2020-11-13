@@ -1,0 +1,8 @@
+parameters:
+  monitoring_satellite.websites:
+    demo_example:
+      name: 'Demo Example'
+      url: 'http://127.0.0.1:8000/example'
+      basic_auth:
+        user: 'foo'
+        password: 'bar'

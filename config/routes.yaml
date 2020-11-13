@@ -1,0 +1,23 @@
+# Security routes.
+login:
+    path: /login
+    controller: App\Controller\MonitoringStationController::login
+    methods: GET|POST
+    defaults:
+        title: "Login"
+
+logout:
+    path: /logout
+    methods: GET
+
+# Index page with the dashboard.
+index:
+    path: /
+    controller: App\Controller\MonitoringStationController::dashboard
+    defaults:
+        title: "Dashboard"
+
+# Example routes.
+example_satellite_controller:
+    path: /example/monitoring-satellite/v1/get
+    controller: App\Controller\Example\ExampleSatelliteController::get

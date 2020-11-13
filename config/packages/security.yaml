@@ -1,0 +1,42 @@
+security:
+    encoders:
+        # This internal class is used by Symfony to represent in-memory users.
+        Symfony\Component\Security\Core\User\User:
+            algorithm: auto
+
+    providers:
+        in_memory:
+            memory:
+                users:
+                    # The basic auth user for the example satellite route. Password = 'bar'.
+                    foo:
+                        password: '$argon2id$v=19$m=65536,t=4,p=1$ofPY6RT+0rCE74M0AlPpzQ$BeiGUhv27D4/6FBmNKC0r4dhImZqj55EfOwYqjxaVbE'
+                        roles: ROLE_USER
+                    # The backend user. Username and password defined in the .env file.
+                    '%env(string:BACKEND_LOGIN_USERNAME)%':
+                        password: '%env(string:BACKEND_LOGIN_PASSWORD)%'
+                        roles: ROLE_ADMIN
+
+    firewalls:
+        # Secure example satellite route with basic auth.
+        example_controller:
+            pattern: ^/example/monitoring-satellite/v1/get
+            http_basic:
+                provider: in_memory
+
+        # Secure all other routes with login form.
+        main:
+            anonymous: true
+            lazy: true
+            form_login:
+                login_path: login
+                check_path: login
+                provider: in_memory
+                default_target_path: index
+            logout:
+                path: logout
+
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/example, roles: ROLE_USER }
+        - { path: ^/, roles: ROLE_ADMIN }
