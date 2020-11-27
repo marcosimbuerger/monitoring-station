@@ -2,10 +2,12 @@
 
 namespace App\Service;
 
+use App\Service\WebsiteDataCache;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -55,15 +57,25 @@ class WebsiteDataFetcher {
   private $websitesConfig;
 
   /**
+   * The website data cache.
+   *
+   * @var \App\Service\WebsiteDataCache
+   */
+  private $websiteDataCache;
+
+  /**
    * WebsiteDataFetcher constructor.
    *
    * @param \Symfony\Contracts\HttpClient\HttpClientInterface $httpClient
    *   The HTTP client.
    * @param \Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface $parameterBag
    *   The website config.
+   * @param \App\Service\WebsiteDataCache $websiteDataCache
+   *   The website data cache.
    */
-  public function __construct(HttpClientInterface $httpClient, ContainerBagInterface $parameterBag) {
+  public function __construct(HttpClientInterface $httpClient, ContainerBagInterface $parameterBag, WebsiteDataCache $websiteDataCache) {
     $this->httpClient = $httpClient;
+    $this->websiteDataCache = $websiteDataCache;
 
     if ($websitesConfig = $parameterBag->get(self::WEBSITES_CONFIG_PARAMETER_NAME)) {
       $this->websitesConfig = $websitesConfig;
@@ -76,10 +88,33 @@ class WebsiteDataFetcher {
   /**
    * Fetch the website data.
    *
+   * @param bool $cache
+   *   Defines if cache should be used.
+   *
+   * @return array
+   *   The website data.
+   *
+   * @throws \Psr\Cache\InvalidArgumentException
+   */
+  public function fetch(bool $cache = TRUE): array {
+    if ($cache === TRUE) {
+      return $this->websiteDataCache->getAdapter()->get(WebsiteDataCache::CACHE_ITEM_KEY, function (ItemInterface $item) {
+        $item->expiresAfter(WebsiteDataCache::CACHE_LIFE_TIME);
+        return $this->fetchWebsiteData();
+      });
+    }
+
+    // Fallback without cache.
+    return $this->fetchWebsiteData();
+  }
+
+  /**
+   * Fetch the website data.
+   *
    * @return array
    *   The website data.
    */
-  public function fetch(): array {
+  private function fetchWebsiteData(): array {
     $data = [];
 
     $i = 0;

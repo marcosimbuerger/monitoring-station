@@ -4,10 +4,8 @@ namespace App\Controller;
 
 use App\Service\WebsiteDataFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class MonitoringStationController.
@@ -50,14 +48,8 @@ class MonitoringStationController extends AbstractController {
    * @throws \Psr\Cache\InvalidArgumentException
    */
   public function dashboard(WebsiteDataFetcher $websiteDataFetcher): Response {
-    $cache = new FilesystemAdapter();
-    $websitesData = $cache->get('monitoring_satellite_websites_data', function (ItemInterface $item) use ($websiteDataFetcher) {
-      $item->expiresAfter(3600);
-      return $websiteDataFetcher->fetch();
-    });
-
     return $this->render('index.html.twig', [
-      'websiteData' => $websitesData
+      'websiteData' => $websiteDataFetcher->fetch()
     ]);
   }
 
