@@ -32,14 +32,16 @@ class WebsiteDataFetcher {
   private const MONITORING_SATELLITE_ENDPOINT = '/monitoring-satellite/v1/get';
 
   /**
-   * The valid website data keys.
+   * The valid website data schema.
    *
    * @var array
    */
-  private const VALID_WEBSITE_DATA_KEYS = [
-    'cms',
-    'cms_version',
-    'php_version',
+  private const VALID_WEBSITE_DATA_SCHEMA = [
+    'app' => '',
+    'versions' => [
+      'app' => '',
+      'php' => '',
+    ],
   ];
 
   /**
@@ -158,20 +160,27 @@ class WebsiteDataFetcher {
    *
    * @param array $responseData
    *   The response data, retrieved from the api.
+   * @param array $dataSchema
+   *   The data schema, which is used to validate the response data.
+   * @param array $validatedData
+   *   The validated response data.
    *
    * @return array
    *   The validated response data.
    */
-  private function validateWebsiteResponseData(array $responseData): array {
-    $data = [];
-
-    foreach (self::VALID_WEBSITE_DATA_KEYS as $key) {
-      if (isset($responseData[$key]) && !empty($responseData[$key])) {
-        $data[$key] = strip_tags($responseData[$key]);
+  private function validateWebsiteResponseData(array $responseData, array $dataSchema = self::VALID_WEBSITE_DATA_SCHEMA, array $validatedData = []): array {
+    foreach ($dataSchema as $key => $value) {
+      if (is_array($value)) {
+        $validatedData[$key] = $this->validateWebsiteResponseData($responseData[$key], $dataSchema[$key]);
+      }
+      else {
+        if (isset($responseData[$key]) && !empty($responseData[$key])) {
+          $validatedData[$key] = strip_tags($responseData[$key]);
+        }
       }
     }
 
-    return $data;
+    return $validatedData;
   }
 
   /**

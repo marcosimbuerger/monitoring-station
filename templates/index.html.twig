@@ -5,8 +5,8 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">Name</th>
-                <th scope="col">CMS</th>
-                <th scope="col">CMS version</th>
+                <th scope="col">App</th>
+                <th scope="col">App version</th>
                 <th scope="col">PHP version</th>
             </tr>
         </thead>
@@ -14,9 +14,9 @@
         {% for website in websiteData %}
             <tr>
                 <td><a href="{{ website.url }}" target="_blank">{{ website.name }}</a></td>
-                <td>{{ website.cms }}</td>
-                <td>{{ website.cms_version }}</td>
-                <td>{{ website.php_version }}</td>
+                <td>{{ website.app }}</td>
+                <td>{{ website.versions.app }}</td>
+                <td>{{ website.versions.php }}</td>
             </tr>
         {% endfor %}
         </tbody>

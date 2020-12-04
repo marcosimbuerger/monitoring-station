@@ -17,13 +17,15 @@ class ExampleSatelliteController {
    * See: security.yaml.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The response.
+   *   The JSON response.
    */
   public function get(): JsonResponse {
     return new JsonResponse([
-      'cms' => 'Drupal',
-      'cms_version' => '9.0.2',
-      'php_version' => '7.4',
+      'app' => 'Drupal',
+      'versions' => [
+        'app' => '9.0.2',
+        'php' => '7.4',
+      ],
     ]);
   }
 
