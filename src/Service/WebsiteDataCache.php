@@ -52,17 +52,25 @@ class WebsiteDataCache {
   /**
    * Delete the website data cache.
    *
+   * @return bool
+   *   TRUE if the item was successfully removed,
+   *   FALSE if there was any error.
+   *
    * @throws \Psr\Cache\InvalidArgumentException
    */
-  public function delete(): void {
-    $this->filesystemCacheAdapter->delete(self::CACHE_ITEM_KEY);
+  public function delete(): bool {
+    return $this->filesystemCacheAdapter->delete(self::CACHE_ITEM_KEY);
   }
 
   /**
    * Prune the website data cache.
+   *
+   * @return bool
+   *   TRUE if the cache was successfully pruned,
+   *   FALSE if there was any error.
    */
-  public function prune(): void {
-    $this->filesystemCacheAdapter->prune();
+  public function prune(): bool {
+    return $this->filesystemCacheAdapter->prune();
   }
 
 }
