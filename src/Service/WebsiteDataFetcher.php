@@ -32,6 +32,20 @@ class WebsiteDataFetcher {
   private const MONITORING_SATELLITE_ENDPOINT = '/monitoring-satellite/v1/get';
 
   /**
+   * The valid website config schema.
+   *
+   * @var array
+   */
+  private const WEBSITE_CONFIG_SCHEMA = [
+    'name' => '',
+    'url' => '',
+    'basic_auth' => [
+      'user' => '',
+      'password' => '',
+    ],
+  ];
+
+  /**
    * The valid website data schema.
    *
    * @var array
@@ -139,20 +153,31 @@ class WebsiteDataFetcher {
    *
    * @param array $websiteConfig
    *   The website config.
+   * @param array $websiteConfigSchema
+   *   The schema of the valid website config.
+   * @param bool $result
+   *   The result, which will be returned.
+   *
    * @return bool
-   *   TRUE if all are valid, FALSE otherwise.
+   *   TRUE if all are valid,
+   *   FALSE otherwise.
    */
-  private function validateWebsiteConfig(array $websiteConfig): bool {
-    if (
-      isset($websiteConfig['url']) && !empty($websiteConfig['url']) &&
-      isset($websiteConfig['name']) && !empty($websiteConfig['name']) &&
-      isset($websiteConfig['basic_auth']['user']) && !empty($websiteConfig['basic_auth']['user']) &&
-      isset($websiteConfig['basic_auth']['password']) && !empty($websiteConfig['basic_auth']['password'])
-    ) {
-      return TRUE;
+  private function validateWebsiteConfig(array $websiteConfig, array $websiteConfigSchema = self::WEBSITE_CONFIG_SCHEMA, bool $result = TRUE): bool {
+    foreach ($websiteConfigSchema as $key => $value) {
+      if (is_array($value) && is_array($websiteConfig[$key]) && $result !== FALSE) {
+        $result = $this->validateWebsiteConfig($websiteConfig[$key], $websiteConfigSchema[$key]);
+      }
+      elseif ($result !== FALSE) {
+        if (isset($websiteConfig[$key]) && !empty($websiteConfig[$key])) {
+          $result = TRUE;
+        }
+        else {
+          $result = FALSE;
+        }
+      }
     }
 
-    return FALSE;
+    return $result;
   }
 
   /**
