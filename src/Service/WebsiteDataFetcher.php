@@ -115,8 +115,17 @@ class WebsiteDataFetcher {
   public function fetch(bool $cache = TRUE): array {
     if ($cache === TRUE) {
       return $this->websiteDataCache->getAdapter()->get(WebsiteDataCache::CACHE_ITEM_KEY, function (ItemInterface $item) {
-        $item->expiresAfter(WebsiteDataCache::CACHE_LIFE_TIME);
-        return $this->fetchWebsiteData();
+        $websiteData = $this->fetchWebsiteData();
+
+        if (empty($websiteData)) {
+          // Do not cache empty response.
+          $item->expiresAfter(0);
+        }
+        else {
+          $item->expiresAfter(WebsiteDataCache::CACHE_LIFE_TIME);
+        }
+
+        return $websiteData;
       });
     }
 
