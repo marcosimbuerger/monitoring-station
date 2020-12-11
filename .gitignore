@@ -4,6 +4,7 @@
 
 # Environment configuration #
 .env
+.env.test
 
 # Configuration #
 config/monitoring_satellite.websites.yaml
@@ -17,3 +18,9 @@ config/monitoring_satellite.websites.yaml
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
