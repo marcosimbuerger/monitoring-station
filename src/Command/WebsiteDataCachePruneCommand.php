@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Service\WebsiteDataCache;
@@ -24,9 +26,9 @@ class WebsiteDataCachePruneCommand extends Command {
   /**
    * The website data cache.
    *
-   * @var \App\Services\WebsiteDataCache
+   * @var \App\Service\WebsiteDataCache
    */
-  protected $websiteDataCache;
+  protected WebsiteDataCache $websiteDataCache;
 
   /**
    * WebsiteDataCachePruneCommand constructor.

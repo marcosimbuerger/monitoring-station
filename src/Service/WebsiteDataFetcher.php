@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Service\WebsiteDataCache;
@@ -63,21 +65,21 @@ class WebsiteDataFetcher {
 
    * @var \Symfony\Contracts\HttpClient\HttpClientInterface
    */
-  private $httpClient;
+  private HttpClientInterface $httpClient;
 
   /**
    * The website config.
    *
-   * @var \Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface
+   * @var array
    */
-  private $websitesConfig;
+  private array $websitesConfig;
 
   /**
    * The website data cache.
    *
    * @var \App\Service\WebsiteDataCache
    */
-  private $websiteDataCache;
+  private WebsiteDataCache $websiteDataCache;
 
   /**
    * WebsiteDataFetcher constructor.

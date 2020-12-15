@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -19,7 +21,7 @@ class FunctionalTestBase extends WebTestCase {
    *
    * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
    */
-  protected $kernelBrowserClient;
+  protected KernelBrowser $kernelBrowserClient;
 
   /**
    * {@inheritdoc}

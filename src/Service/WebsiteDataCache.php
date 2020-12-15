@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -30,7 +32,7 @@ class WebsiteDataCache {
    *
    * @var \Symfony\Component\Cache\Adapter\FilesystemAdapter
    */
-  private $filesystemCacheAdapter;
+  private FilesystemAdapter $filesystemCacheAdapter;
 
   /**
    * WebsiteDataCache constructor.

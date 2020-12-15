@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Service\WebsiteDataFetcher;
@@ -24,9 +26,9 @@ class WebsiteDataFetcherCommand extends Command {
   /**
    * The website data fetcher.
    *
-   * @var \App\Services\WebsiteDataFetcher
+   * @var \App\Service\WebsiteDataFetcher
    */
-  protected $websiteDataFetcher;
+  protected WebsiteDataFetcher $websiteDataFetcher;
 
   /**
    * WebsiteDataFetcherCommand constructor.

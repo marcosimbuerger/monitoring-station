@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\Example;
 
 use App\Tests\Controller\FunctionalTestBase;
