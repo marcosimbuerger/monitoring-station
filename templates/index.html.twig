@@ -14,9 +14,9 @@
         {% for website in websiteData %}
             <tr>
                 <td><a href="{{ website.url }}" target="_blank">{{ website.name }}</a></td>
-                <td>{{ website.app }}</td>
-                <td>{{ website.versions.app }}</td>
-                <td>{{ website.versions.php }}</td>
+                {% if website.app %}<td>{{ website.app }}</td>{% endif %}
+                {% if website.versions.app %}<td>{{ website.versions.app }}</td>{% endif %}
+                {% if website.versions.php %}<td>{{ website.versions.php }}</td>{% endif %}
             </tr>
         {% endfor %}
         </tbody>
