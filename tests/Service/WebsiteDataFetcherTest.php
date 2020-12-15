@@ -143,36 +143,12 @@ class WebsiteDataFetcherTest extends TestCase {
   }
 
   /**
-   * @covers ::__construct
+   * Build the expected valid website data result.
+   *
+   * @return array
+   *   The expected website data result.
    */
-  public function testWebsiteDataFetcher(): void {
-    $websiteDataFetcher = new WebsiteDataFetcher(
-      $this->getHttpClientMock(),
-      $this->getParameterBagMock(['foo']),
-      $this->getWebsiteDataCacheMock()
-    );
-    $this->assertInstanceOf(WebsiteDataFetcher::class, $websiteDataFetcher);
-
-    // With no website data we should get an exception.
-    $this->expectException(InvalidConfigurationException::class);
-    $websiteDataFetcher = new WebsiteDataFetcher(
-      $this->getHttpClientMock(),
-      $this->getParameterBagMock(),
-      $this->getWebsiteDataCacheMock()
-    );
-  }
-
-  /**
-   * @covers ::fetch
-   */
-  public function testFetch(): void {
-    $websiteDataFetcher = new WebsiteDataFetcher(
-      $this->getHttpClientMock(self::TEST_WEBSITE_DATA),
-      $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
-      $this->getWebsiteDataCacheMock()
-    );
-
-    // Build the expected website data array.
+  protected function getExpectedWebsiteDataResult(): array {
     $expectedData = [];
     $i = 0;
     foreach (self::TEST_WEBSITE_CONFIG as $website) {
@@ -184,7 +160,139 @@ class WebsiteDataFetcherTest extends TestCase {
       $i++;
     }
 
+    return $expectedData;
+  }
+
+  /**
+   * @covers ::__construct
+   */
+  public function testWebsiteDataFetcher(): void {
+    // With valid data, we should get a valid WebsiteDataFetcher object.
+    $websiteDataFetcher = new WebsiteDataFetcher(
+      $this->getHttpClientMock(),
+      $this->getParameterBagMock(['foo']),
+      $this->getWebsiteDataCacheMock()
+    );
+    $this->assertInstanceOf(WebsiteDataFetcher::class, $websiteDataFetcher);
+
+    // With no website data, we should get an exception.
+    $this->expectException(InvalidConfigurationException::class);
+    $websiteDataFetcher = new WebsiteDataFetcher(
+      $this->getHttpClientMock(),
+      $this->getParameterBagMock(),
+      $this->getWebsiteDataCacheMock()
+    );
+  }
+
+  /**
+   * Test fetch() with an invalid website config.
+   *
+   * The website data result will only contain data for websites,
+   * which have a valid config (all mandatory values set).
+   * If the website config is not valid, it will not do a api request for this website.
+   *
+   * @covers ::fetch
+   */
+  public function testFetchWithInvalidWebsiteConfig(): void {
+    $websiteConfig = self::TEST_WEBSITE_CONFIG;
+    // Remove a mandatory config value.
+    unset($websiteConfig[0]['basic_auth']['user']);
+
+    // As the first config is invalid, the api request will only done once,
+    // which then will return the data of our 2nd test data.
+    // Therefore, remove website data [0] from our test data.
+    $websiteData = self::TEST_WEBSITE_DATA;
+    unset($websiteData[0]);
+
+    $websiteDataFetcher = new WebsiteDataFetcher(
+      $this->getHttpClientMock($websiteData),
+      $this->getParameterBagMock($websiteConfig),
+      $this->getWebsiteDataCacheMock()
+    );
+
+    // As the config of the 1st website is not valid,
+    // it will not be in the website data result.
+    $expectedData = $expectedData = $this->getExpectedWebsiteDataResult();
+    unset($expectedData[0]);
+    $expectedData = array_values($expectedData);
+
     $websiteData = $websiteDataFetcher->fetch(FALSE);
+
+    // We should get the website data result for the 2nd website.
+    $this->assertCount(1, $websiteData);
+    $this->assertEquals($expectedData, $websiteData);
+  }
+
+  /**
+   * Test fetch() with extended website data.
+   *
+   * The monitoring satellite will return more values as needed (for whatever reason).
+   * The website data result should only contain website data,
+   * which are defined by the website data schema (WebsiteDataFetcher::VALID_WEBSITE_DATA_SCHEMA).
+   *
+   * @covers ::fetch
+   */
+  public function testFetchWithExtendedWebsiteData(): void {
+    $websiteTestData = self::TEST_WEBSITE_DATA;
+    // Add additional data to the website data response.
+    $websiteTestData[0]['foo'] = 'XYZ';
+    $websiteTestData[0]['versions']['bar'] = 100;
+
+    $websiteDataFetcher = new WebsiteDataFetcher(
+      $this->getHttpClientMock($websiteTestData),
+      $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
+      $this->getWebsiteDataCacheMock()
+    );
+
+    $expectedData = $expectedData = $this->getExpectedWebsiteDataResult();
+
+    $websiteData = $websiteDataFetcher->fetch(FALSE);
+
+    // We should get the website data result for both websites,
+    // but for the first website, the additionally added values
+    // 'foo' and 'bar' should be removed.
+    $this->assertCount(2, $websiteData);
+    $this->assertFalse(isset($websiteData[0]['foo']));
+    $this->assertFalse(isset($websiteData[0]['versions']['bar']));
+    $this->assertEquals($expectedData, $websiteData);
+  }
+
+  /**
+   * Test fetch() with empty website data.
+   *
+   * If the monitoring satellite returns no data.
+   *
+   * @covers ::fetch
+   */
+  public function testFetchWithEmptyWebsiteData(): void {
+    $websiteDataFetcher = new WebsiteDataFetcher(
+      $this->getHttpClientMock([[], []]),
+      $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
+      $this->getWebsiteDataCacheMock()
+    );
+
+    // We should get an empty array.
+    $websiteData = $websiteDataFetcher->fetch(FALSE);
+    $this->assertEquals([], $websiteData);
+  }
+
+  /**
+   * Test fetch() with an successful example.
+   *
+   * @covers ::fetch
+   */
+  public function testFetch(): void {
+    $websiteDataFetcher = new WebsiteDataFetcher(
+      $this->getHttpClientMock(self::TEST_WEBSITE_DATA),
+      $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
+      $this->getWebsiteDataCacheMock()
+    );
+
+    $expectedData = $this->getExpectedWebsiteDataResult();
+
+    // We should get the website data result for both websites.
+    $websiteData = $websiteDataFetcher->fetch(FALSE);
+    $this->assertCount(2, $websiteData);
     $this->assertEquals($expectedData, $websiteData);
   }
 
