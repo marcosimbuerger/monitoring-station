@@ -29,6 +29,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
+    - name: Copy .env.test.local.example
+      run: cp .env.test.local.example .env.test.local
+
+    - name: Copy example.monitoring_satellite.websites.yaml
+      run: cp config/example.monitoring_satellite.websites.yaml config/monitoring_satellite.websites.yaml
+
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress
