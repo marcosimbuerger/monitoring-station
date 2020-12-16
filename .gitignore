@@ -2,10 +2,6 @@
 .idea/
 .idea/*
 
-# Environment configuration #
-.env
-.env.test
-
 # Configuration #
 config/monitoring_satellite.websites.yaml
 
