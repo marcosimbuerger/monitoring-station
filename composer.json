@@ -1,10 +1,17 @@
 {
     "name": "marcosimbuerger/monitoring-station",
-    "description": "Monitoring station. Overview of your CMS projects.",
-    "keywords": ["monitoring", "cms"],
-    "homepage": "https://github.com/marcosimbuerger/monitoring-station",
     "type": "project",
-    "license": "proprietary",
+    "description": "Monitoring Station. Overview of your apps.",
+    "keywords": ["monitoring", "station", "symfony"],
+    "homepage": "https://github.com/marcosimbuerger/monitoring-station",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marco Simbürger",
+            "homepage": "https://github.com/marcosimbuerger",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": ">=7.4",
         "ext-ctype": "*",
