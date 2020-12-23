@@ -1,5 +1,5 @@
 imports:
-    - { resource: 'monitoring_satellite.websites.yaml' }
+    - { resource: 'monitoring_satellite.websites.yaml', ignore_errors: true }
 
 services:
     # default configuration for services in *this* file
