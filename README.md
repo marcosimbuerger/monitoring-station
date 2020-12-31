@@ -6,6 +6,7 @@ The monitoring station collects the data from the Monitoring Satellites and disp
 * [Monitoring Satellite for Symfony (Symfony Bundle)](https://github.com/marcosimbuerger/symfony-monitoring-satellite-bundle)
 * [Monitoring Satellite for Drupal](https://www.drupal.org/project/monitoring_satellite)
 * [Monitoring Satellite for Contao](https://github.com/marcosimbuerger/contao-monitoring-satellite)
+* Magento (soon)
 * Shopware (soon)
 
 ## Installation
