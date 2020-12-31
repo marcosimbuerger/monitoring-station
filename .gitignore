@@ -9,6 +9,9 @@ config/monitoring_satellite.websites.yaml
 composer.lock
 composer.phar
 
+# Symfony
+symfony.lock
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
