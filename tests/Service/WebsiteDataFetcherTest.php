@@ -7,6 +7,7 @@ namespace App\Tests\Service;
 use App\Service\WebsiteDataCache;
 use App\Service\WebsiteDataFetcher;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -131,6 +132,18 @@ class WebsiteDataFetcherTest extends TestCase {
   }
 
   /**
+   * Get the logger mock.
+   *
+   * @return \Psr\Log\LoggerInterface
+   *   The logger mock.
+   */
+  protected function getLoggerMock(): LoggerInterface {
+    return $this->getMockBuilder(LoggerInterface::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+  }
+
+  /**
    * Get the website data cache mock.
    *
    * @return \App\Service\WebsiteDataCache
@@ -173,6 +186,7 @@ class WebsiteDataFetcherTest extends TestCase {
     $websiteDataFetcher = new WebsiteDataFetcher(
       $this->getHttpClientMock(),
       $this->getParameterBagMock(['foo']),
+      $this->getLoggerMock(),
       $this->getWebsiteDataCacheMock()
     );
     $this->assertInstanceOf(WebsiteDataFetcher::class, $websiteDataFetcher);
@@ -182,6 +196,7 @@ class WebsiteDataFetcherTest extends TestCase {
     $websiteDataFetcher = new WebsiteDataFetcher(
       $this->getHttpClientMock(),
       $this->getParameterBagMock(),
+      $this->getLoggerMock(),
       $this->getWebsiteDataCacheMock()
     );
   }
@@ -209,6 +224,7 @@ class WebsiteDataFetcherTest extends TestCase {
     $websiteDataFetcher = new WebsiteDataFetcher(
       $this->getHttpClientMock($websiteData),
       $this->getParameterBagMock($websiteConfig),
+      $this->getLoggerMock(),
       $this->getWebsiteDataCacheMock()
     );
 
@@ -243,6 +259,7 @@ class WebsiteDataFetcherTest extends TestCase {
     $websiteDataFetcher = new WebsiteDataFetcher(
       $this->getHttpClientMock($websiteTestData),
       $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
+      $this->getLoggerMock(),
       $this->getWebsiteDataCacheMock()
     );
 
@@ -270,6 +287,7 @@ class WebsiteDataFetcherTest extends TestCase {
     $websiteDataFetcher = new WebsiteDataFetcher(
       $this->getHttpClientMock([[], []]),
       $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
+      $this->getLoggerMock(),
       $this->getWebsiteDataCacheMock()
     );
 
@@ -287,6 +305,7 @@ class WebsiteDataFetcherTest extends TestCase {
     $websiteDataFetcher = new WebsiteDataFetcher(
       $this->getHttpClientMock(self::TEST_WEBSITE_DATA),
       $this->getParameterBagMock(self::TEST_WEBSITE_CONFIG),
+      $this->getLoggerMock(),
       $this->getWebsiteDataCacheMock()
     );
 
