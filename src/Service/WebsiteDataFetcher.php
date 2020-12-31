@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Service\WebsiteDataCache;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,6 +76,13 @@ class WebsiteDataFetcher {
   private array $websitesConfig;
 
   /**
+   * The logger.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  private LoggerInterface $logger;
+
+  /**
    * The website data cache.
    *
    * @var \App\Service\WebsiteDataCache
@@ -88,12 +96,15 @@ class WebsiteDataFetcher {
    *   The HTTP client.
    * @param \Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface $parameterBag
    *   The website config.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger.
    * @param \App\Service\WebsiteDataCache $websiteDataCache
    *   The website data cache.
    */
-  public function __construct(HttpClientInterface $httpClient, ContainerBagInterface $parameterBag, WebsiteDataCache $websiteDataCache) {
+  public function __construct(HttpClientInterface $httpClient, ContainerBagInterface $parameterBag, LoggerInterface $logger, WebsiteDataCache $websiteDataCache) {
     $this->httpClient = $httpClient;
     $this->websiteDataCache = $websiteDataCache;
+    $this->logger = $logger;
 
     if ($websitesConfig = $parameterBag->get(self::WEBSITES_CONFIG_PARAMETER_NAME)) {
       $this->websitesConfig = $websitesConfig;
@@ -122,6 +133,7 @@ class WebsiteDataFetcher {
         if (empty($websiteData)) {
           // Do not cache empty response.
           $item->expiresAfter(0);
+          $this->logger->notice('The fetch did not return any data.');
         }
         else {
           $item->expiresAfter(WebsiteDataCache::CACHE_LIFE_TIME);
@@ -145,7 +157,7 @@ class WebsiteDataFetcher {
     $data = [];
 
     $i = 0;
-    foreach ($this->websitesConfig as $website) {
+    foreach ($this->websitesConfig as $key => $website) {
       if ($this->validateWebsiteConfig($website)) {
         if ($responseData = $this->doApiRequest($website['url'], $website['basic_auth'])) {
           $data[$i]['name'] = $website['name'];
@@ -153,6 +165,9 @@ class WebsiteDataFetcher {
           $data[$i] += $this->validateWebsiteResponseData($responseData);
           $i++;
         }
+      }
+      else {
+        $this->logger->warning('The website config "{key}" is not valid.', ['key' => $key]);
       }
     }
 
@@ -237,9 +252,11 @@ class WebsiteDataFetcher {
    * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
    */
   private function doApiRequest(string $url, array $basicAuth): ?array {
+    $endpoint = $url . self::MONITORING_SATELLITE_ENDPOINT;
+
     $response = $this->httpClient->request(
       Request::METHOD_GET,
-      $url . self::MONITORING_SATELLITE_ENDPOINT,
+      $endpoint,
       [
         'auth_basic' => [$basicAuth['user'], $basicAuth['password']],
       ]
@@ -250,6 +267,11 @@ class WebsiteDataFetcher {
         return json_decode($content, TRUE);
       }
     }
+
+    $this->logger->notice('Could not retrieve data from {endpoint}. Status code: {statusCode}.', [
+      'endpoint' => $endpoint,
+      'statusCode' => $response->getStatusCode(),
+    ]);
 
     return NULL;
   }
