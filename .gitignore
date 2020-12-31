@@ -1,9 +1,13 @@
-# PHPStorm #
+# PHPStorm
 .idea/
 .idea/*
 
-# Configuration #
+# Configuration
 config/monitoring_satellite.websites.yaml
+
+# Composer
+composer.lock
+composer.phar
 
 ###> symfony/framework-bundle ###
 /.env.local
