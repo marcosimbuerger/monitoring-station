@@ -11,7 +11,6 @@ security:
                     # The basic auth user for the example satellite route. Password = 'bar'.
                     foo:
                         password: '$argon2id$v=19$m=65536,t=4,p=1$ofPY6RT+0rCE74M0AlPpzQ$BeiGUhv27D4/6FBmNKC0r4dhImZqj55EfOwYqjxaVbE'
-                        roles: ROLE_USER
                     # The backend user. Username and password defined in the .env file.
                     '%env(string:BACKEND_LOGIN_USERNAME)%':
                         password: '%env(string:BACKEND_LOGIN_PASSWORD)%'
@@ -38,5 +37,5 @@ security:
 
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/example, roles: ROLE_USER }
+        - { path: ^/example, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: ROLE_ADMIN }
