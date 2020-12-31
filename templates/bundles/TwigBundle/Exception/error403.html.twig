@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2 class="text-danger">Access denied</h2>
+    <p class="font-weight-bold">Sorry, you do not have access to this page.</p>
+    <p><a href="{{ path('index') }}" class="text-danger">Return to the homepage</a></p>
+{% endblock %}

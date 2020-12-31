@@ -19,6 +19,8 @@ $ composer create-project marcosimbuerger/monitoring-station .
 ### Create your backend login
 Copy `.env.local.example` to `.env.local` and add your backend username and password. Use `bin/console security:encode-password` to generate the password hash.
 
+Do not forget to add `APP_ENV=prod` before using it in production.
+
 ### Add the Monitoring Satellites
 Copy the `config/example.monitoring_satellite.websites.yaml` file to `config/monitoring_satellite.websites.yaml` and add your Monitoring Satellites endpoints.
 
