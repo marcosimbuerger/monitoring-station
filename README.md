@@ -4,8 +4,8 @@ The monitoring station collects the data from the Monitoring Satellites and disp
 
 ## Monitoring Satellites
 * [Monitoring Satellite for Symfony (Symfony Bundle)](https://github.com/marcosimbuerger/symfony-monitoring-satellite-bundle)
-* [Monitoring Satellite for Contao (Contao Bundle)](https://github.com/marcosimbuerger/contao-monitoring-satellite)
-* Drupal (soon)
+* [Monitoring Satellite for Drupal](https://www.drupal.org/project/monitoring_satellite)
+* [Monitoring Satellite for Contao](https://github.com/marcosimbuerger/contao-monitoring-satellite)
 * Shopware (soon)
 
 ## Installation
@@ -26,6 +26,15 @@ Open root in your browser. Insert your backend login credentials to log in.
 
 ## Test
 You can call `/example/monitoring-satellite/v1/get` to get an example of the result of a Monitoring Satellite. Basic auth: `foo` | `bar`
+
+## Commands
+Available console commands.
+
+```
+website-data:fetch          Fetches the website data.
+website-data:clear-cache    Clears the website data cache.
+website-data:prune-cache    Prunes the website data cache.
+```
 
 ## License
 This project is released under the MIT license. See the included [LICENSE](LICENSE) file for more information.
