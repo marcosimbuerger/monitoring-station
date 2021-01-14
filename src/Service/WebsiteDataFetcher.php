@@ -95,7 +95,7 @@ class WebsiteDataFetcher {
    * @param \Symfony\Contracts\HttpClient\HttpClientInterface $httpClient
    *   The HTTP client.
    * @param \Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface $parameterBag
-   *   The website config.
+   *   The parameter bag.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger.
    * @param \App\Service\WebsiteDataCache $websiteDataCache
@@ -127,7 +127,7 @@ class WebsiteDataFetcher {
    */
   public function fetch(bool $cache = TRUE): array {
     if ($cache === TRUE) {
-      return $this->websiteDataCache->getAdapter()->get(WebsiteDataCache::CACHE_ITEM_KEY, function (ItemInterface $item) {
+      return $this->websiteDataCache->getAdapter()->get($this->websiteDataCache->getCacheItemKey(), function (ItemInterface $item) {
         $websiteData = $this->fetchWebsiteData();
 
         if (empty($websiteData)) {
@@ -136,7 +136,7 @@ class WebsiteDataFetcher {
           $this->logger->notice('The fetch did not return any data.');
         }
         else {
-          $item->expiresAfter(WebsiteDataCache::CACHE_LIFE_TIME);
+          $item->expiresAfter($this->websiteDataCache->getCacheLifeTime());
         }
 
         return $websiteData;

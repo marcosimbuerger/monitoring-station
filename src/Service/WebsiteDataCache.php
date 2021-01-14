@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 /**
  * Class WebsiteDataCache.
@@ -18,14 +19,14 @@ class WebsiteDataCache {
    *
    * @var string
    */
-  public const CACHE_ITEM_KEY = 'monitoring_satellite_websites_data';
+  private const CACHE_ITEM_KEY = 'monitoring_satellite_websites_data';
 
   /**
-   * The cache life time.
+   * The cache lifetime.
    *
    * @var int
    */
-  public const CACHE_LIFE_TIME = 3600;
+  private int $cacheLifeTime;
 
   /**
    * The file system cache adapter.
@@ -36,9 +37,37 @@ class WebsiteDataCache {
 
   /**
    * WebsiteDataCache constructor.
+   *
+   * @param \Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface $parameterBag
+   *   The parameter bag.
    */
-  public function __construct() {
+  public function __construct(ContainerBagInterface $parameterBag) {
     $this->filesystemCacheAdapter = new FilesystemAdapter();
+
+    $this->cacheLifeTime = 3600;
+    if ($cacheLifeTime = $parameterBag->get('website_data.cache_life_time')) {
+      $this->cacheLifeTime = $cacheLifeTime;
+    }
+  }
+
+  /**
+   * Get the cache item key.
+   *
+   * @return string
+   *   The cache item key.
+   */
+  public function getCacheItemKey(): string {
+    return self::CACHE_ITEM_KEY;
+  }
+
+  /**
+   * Get the cache lifetime value.
+   *
+   * @return int
+   *   The cache lifetime value.
+   */
+  public function getCacheLifeTime(): int {
+    return $this->cacheLifeTime;
   }
 
   /**

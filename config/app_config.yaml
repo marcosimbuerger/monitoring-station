@@ -1,0 +1,2 @@
+parameters:
+  website_data.cache_life_time: 3600

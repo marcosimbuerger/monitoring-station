@@ -1,4 +1,5 @@
 imports:
+    - { resource: 'app_config.yaml' }
     - { resource: 'monitoring_satellite.websites.yaml', ignore_errors: true }
 
 services:
